@@ -859,7 +859,7 @@ console.log(input.reduce((prev, curr) => Math.max(getInfo(curr).seatID, prev), 0
 // part 2
 let seatIDs = Array.from(Array(1023).keys());
 let ids = input.map((seat) => getInfo(seat).seatID);
-seatIDs = seatIDs.filter((ID) => !ids.includes(ID));
+seatIDs = seatIDs.find((ID) => !ids.includes(ID) && ids.includes(ID + 1) && ids.includes(ID - 1));
 console.log(seatIDs);
 
 function getInfo(string) {
@@ -873,16 +873,15 @@ function getInfo(string) {
 }
 
 function search(string) {
-  let letters = string.split('');
   let max = Math.pow(2, string.length) - 1,
     min = 0,
     mid;
-  letters.forEach((char) => {
+    string.split('').forEach((char) => {
     mid = (max + 1 - min) / 2 + min;
     if (char.match(/[FL]/)) max = mid - 1;
     else min = mid;
   });
 
-  if (letters[string.length - 1].match(/[FL]/)) mid = mid - 1;
+  if (string[string.length - 1].match(/[FL]/)) mid = mid - 1;
   return mid;
 }
