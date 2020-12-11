@@ -98,9 +98,9 @@ input = input.split('\n');
 const width = input[0].length;
 
 function next(grid, part) {
-  return grid.map((row, rowIndex) => {
-    row = row.split('');
-    return row
+  return grid.map((row, rowIndex) =>
+    row
+      .split('')
       .map((char, col) => {
         if (char == FLOOR) return char;
         let neighbors = getNeighbors(grid, rowIndex, col, part);
@@ -110,8 +110,8 @@ function next(grid, part) {
         }
         return char;
       })
-      .join('');
-  });
+      .join('')
+  );
 }
 
 function getNeighbors(grid, row, col, part) {
