@@ -98,8 +98,7 @@ input = input.split('\n');
 const width = input[0].length;
 
 function next(grid, part) {
-  dupe = [...grid];
-  return dupe.map((row, rowIndex) => {
+  return grid.map((row, rowIndex) => {
     row = row.split('');
     return row
       .map((char, col) => {
