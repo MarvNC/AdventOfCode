@@ -25,18 +25,24 @@ function nearestTime(time, busID) {
   return Math.ceil(time / busID) * busID;
 }
 
-// working for all test cases but not actual input
-function consecutive(schedule, startFrom) {
-  let pass = false;
-  let first = parseInt(schedule[0]);
-  let i = nearestTime(startFrom, first);
-  do {
-    i += first;
-    pass = schedule.every((bus, index) => {
-      if (bus == 'x') return true;
-      return nearestTime(i, parseInt(bus)) - i == index;
-    });
-  } while (!pass);
+function consecutive(schedule) {
+  let busSchedule = schedule
+    .map((bus, index) => {
+      if (bus != 'x') {
+        return { bus: parseInt(bus), index };
+      }
+    })
+    .filter((elem) => elem);
+  let i = 0;
+  let multiple = busSchedule[0].bus;
+  for (bus of busSchedule) {
+    if (bus == busSchedule[0]) continue;
+    while ((i + bus.index) % bus.bus != 0) {
+      i += multiple;
+    }
+    console.log(bus, multiple);
+    multiple *= bus.bus;
+  }
   return i;
 }
 
@@ -44,5 +50,5 @@ function consecutive(schedule, startFrom) {
 let earliest = earliestDeparture(startTime, input[1]);
 console.log(earliest.busID * earliest.timeDiff);
 
-let consec = consecutive(input[1], 100000000000000);
+let consec = consecutive(input[1]);
 console.log(consec);
