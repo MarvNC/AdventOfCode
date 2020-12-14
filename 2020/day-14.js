@@ -548,20 +548,28 @@ mem[50713] = 7725506`;
 input = input.split('\n');
 
 let mem = new Map();
-let mask = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'.split('');
+let mask;
 
 function process(instruction, part) {
   if (instruction.match(/mask/)) {
     let newMask = instruction.split(' = ')[1];
-    mask = newMask
-      .split('')
-      .map((char, index) => {
+    if (part == 1) {
+      mask = newMask
+        .split('')
+        .map((char, index) => {
+          if (char == '0' || char == '1') {
+            return { val: parseInt(char), index };
+          }
+        })
+        .filter((elem) => elem);
+    } else {
+      // part2
+      mask = newMask.split('').map((char, index) => {
         if (char == '0' || char == '1') {
           return { val: parseInt(char), index };
-        }
-      })
-      .filter((elem) => elem);
-    // console.log(mask);
+        } else return { val: char, index };
+      });
+    }
     return;
   }
   let address = parseInt(instruction.match(/(\[)(\d+)(\])/)[2]);
@@ -574,7 +582,34 @@ function process(instruction, part) {
     });
     mem.set(address, bin);
   }
-  // part 2: overwrite the memory address with mask floating something 
+  // part 2: overwrite the memory address with mask floating something
+  if (part == 2) {
+    address = toBinary(address);
+    let addresses = [];
+    addresses.push(address);
+
+    let setSpot = (arr, index, val) =>
+      arr.map((adr) => {
+        let newAdr = [...adr];
+        newAdr[index] = val;
+        return newAdr;
+      });
+    for (const bit of mask) {
+      if (Number.isInteger(bit.val)) {
+        if (address[bit.index] != 1) {
+          addresses = setSpot(addresses, bit.index, bit.val);
+        }
+      } else {
+        addresses = [...setSpot(addresses, bit.index, 0), ...setSpot(addresses, bit.index, 1)];
+      }
+    }
+
+    addresses = addresses.map((adr) => computeValue(adr));
+
+    for (let adr of addresses) {
+      mem.set(adr, overwrite);
+    }
+  }
 }
 
 function computeValue(address) {
@@ -607,10 +642,9 @@ function toBinary(num) {
 }
 
 // part 1
-input.forEach((line) => process(line, 1));
+// input.forEach((line) => process(line, 1));
+// console.log(Array.from(mem.values()).reduce((prev, curr) => prev + computeValue(curr), 0));
 
 // part 2
-// input.forEach((line) => process(line, 2));
-
-// sum all
-console.log(Array.from(mem.values()).reduce((prev, curr) => prev + computeValue(curr), 0));
+input.forEach((line) => process(line, 2));
+console.log(Array.from(mem.values()).reduce((prev, curr) => prev + curr, 0));
